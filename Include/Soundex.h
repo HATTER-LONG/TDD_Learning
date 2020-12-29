@@ -2,6 +2,7 @@
 
 #include <cstddef>
 #include <string>
+#include <unordered_map>
 
 // TODO: 暂时将实现也都放入同一个文件中比较方便修改，后续合适的时机抽出
 
@@ -38,16 +39,30 @@ private:
      */
     std::string encodedDigits(const std::string& Word) const
     {
-        if (Word.length() > 1) return encodedDigit();
+        if (Word.length() > 1) return encodedDigit(Word[1]);
         return "";
     }
 
     /**
      * @brief 获取一个字符对应的数字
      *
+     * @param Letter
      * @return std::string
      */
-    std::string encodedDigit() const { return "1"; }
+    std::string encodedDigit(char Letter) const
+    {
+        // clang-format off
+        const std::unordered_map<char, std::string> encodings { 
+            { 'b', "1" }, { 'f', "1" }, { 'p', "1" }, { 'v', "1" },
+            { 'c', "2" }, { 'g', "2" }, { 'j', "2" }, { 'k', "2" }, { 'q', "2" }, 
+                                        { 's', "2" }, { 'x', "2" }, { 'z', "2" },
+            { 'd', "3" }, { 't', "3" }, 
+            { 'l', "4" }, 
+            { 'm', "5" }, { 'n', "5" }, 
+            { 'r', "6" } };
+        // clang-format on
+        return encodings.find(Letter)->second;
+    }
     /**
      * @brief 安装 Soundex 的规则要求进行补零
      *

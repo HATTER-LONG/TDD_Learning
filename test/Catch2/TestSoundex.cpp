@@ -33,14 +33,10 @@ TEST_CASE_METHOD(FixtureSoundex, "Pads with zeros to ensure three digits", "[Sou
     }
 }
 
-TEST_CASE_METHOD(FixtureSoundex, "Retains sole letter of one letter word")
+TEST_CASE_METHOD(FixtureSoundex, "Replace consonants with appropriate numbers", "[SoundexEncoding]")
 {
-    GIVEN("A MSoundex member")
+    SECTION("Test to replace the consonants in the entered words with appropriate numbers")
     {
-        WHEN("Enter a word")
-        {
-            auto encoded = MSoundex.encode("Ab");
-            THEN("Check that the return value Retains sole letter of one letter word") { REQUIRE_THAT(encoded, Equals("A100")); }
-        }
+        REQUIRE_THAT(MSoundex.encode("Ax"), Equals("A200"));
     }
 }
