@@ -20,7 +20,7 @@ public:
      * @param word
      * @return std::string
      */
-    std::string encode(const std::string& Word) const { return zeroPad(head(Word) + encodedDigits(Word)); }
+    std::string encode(const std::string& Word) const { return zeroPad(head(Word) + encodedDigits(tail(Word))); }
 
 private:
     /**
@@ -32,6 +32,14 @@ private:
     std::string head(const std::string& Word) const { return Word.substr(0, 1); }
 
     /**
+     * @brief 获取单词除了第一个字母外的其余字母
+     *
+     * @param Word
+     * @return std::string
+     */
+    std::string tail(const std::string& Word) const { return Word.substr(1); }
+
+    /**
      * @brief 获取首字母后其他字符转化的对应数字
      *
      * @param Word
@@ -39,8 +47,10 @@ private:
      */
     std::string encodedDigits(const std::string& Word) const
     {
-        if (Word.length() > 1) return encodedDigit(Word[1]);
-        return "";
+        std::string encoding;
+        for (auto letter : Word)
+            encoding += encodedDigit(letter);
+        return encoding;
     }
 
     /**
@@ -61,7 +71,9 @@ private:
             { 'm', "5" }, { 'n', "5" }, 
             { 'r', "6" } };
         // clang-format on
-        return encodings.find(Letter)->second;
+
+        auto it = encodings.find(Letter);
+        return it == encodings.end() ? "" : it->second;
     }
     /**
      * @brief 安装 Soundex 的规则要求进行补零
