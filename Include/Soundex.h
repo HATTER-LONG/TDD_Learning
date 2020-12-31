@@ -1,12 +1,13 @@
 #pragma once
 
+#include <cctype>
 #include <cstddef>
 #include <string>
 #include <unordered_map>
 
-// TODO: 暂时将实现也都放入同一个文件中比较方便修改，后续合适的时机抽出
-
 static const size_t MaxCodeLength { 4 };
+const std::string NotADigit("*");
+
 /**
  * @brief Soundex 算法类
  *
@@ -20,16 +21,32 @@ public:
      * @param word
      * @return std::string
      */
-    std::string encode(const std::string& Word) const { return zeroPad(head(Word) + encodedDigits(tail(Word))); }
+    std::string encode(const std::string& Word) const;
 
 private:
+    /**
+     * @brief 返回传入的字符串首字母大写
+     *
+     * @param String
+     * @return std::string
+     */
+    std::string upperFront(const std::string& String) const;
+
+    /**
+     * @brief 将输入的 char 字符转换为小写
+     *
+     * @param C
+     * @return char
+     */
+    char lower(char C) const;
+
     /**
      * @brief 获取单词的第一个字母
      *
      * @param Word
      * @return std::string
      */
-    std::string head(const std::string& Word) const { return Word.substr(0, 1); }
+    std::string head(const std::string& Word) const;
 
     /**
      * @brief 获取单词除了第一个字母外的其余字母
@@ -37,7 +54,16 @@ private:
      * @param Word
      * @return std::string
      */
-    std::string tail(const std::string& Word) const { return Word.substr(1); }
+    std::string tail(const std::string& Word) const;
+
+    /**
+     * @brief 完成字符串的 Soundex 规则编码
+     *
+     * @param Encoding
+     * @return true
+     * @return false
+     */
+    bool isComplete(const std::string& Encoding) const;
 
     /**
      * @brief 获取首字母后其他字符转化的对应数字
@@ -45,13 +71,40 @@ private:
      * @param Word
      * @return std::string
      */
-    std::string encodedDigits(const std::string& Word) const
-    {
-        std::string encoding;
-        for (auto letter : Word)
-            encoding += encodedDigit(letter);
-        return encoding;
-    }
+    std::string encodedDigits(const std::string& Word) const;
+
+    /**
+     * @brief 对词首字母进行编码翻译
+     *
+     * @param Encoding
+     * @param Word
+     */
+    void encodeHead(std::string& Encoding, const std::string& Word) const;
+
+    /**
+     * @brief 对词尾字符进行编码翻译
+     *
+     * @param Encoding
+     * @param Word
+     */
+    void encodeTail(std::string& Encoding, const std::string& Word) const;
+
+    /**
+     * @brief 翻译单一字符 letter 并拼接到 Encoding
+     *
+     * @param Encoding
+     * @param Letter
+     */
+    void encodeLetter(std::string& Encoding, char Letter, char LastLetter) const;
+
+    /**
+     * @brief 判断是否是元音字符
+     *
+     * @param Letter
+     * @return true
+     * @return false
+     */
+    bool isVowel(char Letter) const;
 
     /**
      * @brief 获取一个字符对应的数字
@@ -59,31 +112,31 @@ private:
      * @param Letter
      * @return std::string
      */
-    std::string encodedDigit(char Letter) const
-    {
-        // clang-format off
-        const std::unordered_map<char, std::string> encodings { 
-            { 'b', "1" }, { 'f', "1" }, { 'p', "1" }, { 'v', "1" },
-            { 'c', "2" }, { 'g', "2" }, { 'j', "2" }, { 'k', "2" }, { 'q', "2" }, 
-                                        { 's', "2" }, { 'x', "2" }, { 'z', "2" },
-            { 'd', "3" }, { 't', "3" }, 
-            { 'l', "4" }, 
-            { 'm', "5" }, { 'n', "5" }, 
-            { 'r', "6" } };
-        // clang-format on
+    std::string encodedDigit(char Letter) const;
 
-        auto it = encodings.find(Letter);
-        return it == encodings.end() ? "" : it->second;
-    }
+    /**
+     * @brief 判断是否重复的字符
+     *
+     * @param Encoding
+     * @param Letter
+     * @return true
+     * @return false
+     */
+    bool isDuplicateLetter(std::string& Encoding, std::string& Letter) const;
+
+    /**
+     * @brief 获取 Encoding 最后一个字符
+     *
+     * @param Encoding
+     * @return std::string
+     */
+    std::string lastDigit(const std::string& Encoding) const;
+
     /**
      * @brief 安装 Soundex 的规则要求进行补零
      *
      * @param Word
      * @return std::string
      */
-    std::string zeroPad(const std::string& Word) const
-    {
-        auto zerosNeeded = MaxCodeLength - Word.length();
-        return Word + std::string(zerosNeeded, '0');
-    }
+    std::string zeroPad(const std::string& Word) const;
 };

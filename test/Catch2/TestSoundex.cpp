@@ -38,3 +38,37 @@ TEST_CASE_METHOD(FixtureSoundex, "Limits length to four characters", "[SoundexEn
 {
     REQUIRE(MSoundex.encode("Dcdlb").length() == 4);
 }
+
+TEST_CASE_METHOD(FixtureSoundex, "Ignores Vowel like letters", "[SoundexEncoding]")
+{
+    REQUIRE_THAT(MSoundex.encode("BaAeEiIoOuUhHyYcdl"), Equals("B234"));
+}
+
+TEST_CASE_METHOD(FixtureSoundex, "Combines duplicate encodings", "[SoundexEncoding]")
+{
+    // REQUIRE_THAT(MSoundex.encodedDigit('b'), Equals(MSoundex.encodedDigit('f')));
+    // REQUIRE_THAT(MSoundex.encodedDigit('c'), Equals(MSoundex.encodedDigit('g')));
+    // REQUIRE_THAT(MSoundex.encodedDigit('d'), Equals(MSoundex.encodedDigit('t')));
+
+    REQUIRE_THAT(MSoundex.encode("Abfcgdt"), Equals("A123"));
+}
+
+TEST_CASE_METHOD(FixtureSoundex, "Upper cases first letter", "[SoundexEncoding]")
+{
+    REQUIRE_THAT(MSoundex.encode("abcd"), StartsWith("A"));
+}
+
+TEST_CASE_METHOD(FixtureSoundex, "Ignores case when encoding consonants", "[SoundexEncoding]")
+{
+    REQUIRE_THAT(MSoundex.encode("BCDL"), Equals(MSoundex.encode("Bcdl")));
+}
+
+TEST_CASE_METHOD(FixtureSoundex, "Combines duplicate codes when 2nd letter duplicates 1st", "[SoundexEncoding]")
+{
+    REQUIRE_THAT(MSoundex.encode("Bbcd"), Equals("B230"));
+}
+
+TEST_CASE_METHOD(FixtureSoundex, "Does not combine duplicate encodings separate by vowels")
+{
+    REQUIRE_THAT(MSoundex.encode("Jbob"), Equals("J110"));
+}
