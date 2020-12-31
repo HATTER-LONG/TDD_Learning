@@ -25,38 +25,6 @@ public:
 
 private:
     /**
-     * @brief 返回传入的字符串首字母大写
-     *
-     * @param String
-     * @return std::string
-     */
-    std::string upperFront(const std::string& String) const;
-
-    /**
-     * @brief 将输入的 char 字符转换为小写
-     *
-     * @param C
-     * @return char
-     */
-    char lower(char C) const;
-
-    /**
-     * @brief 获取单词的第一个字母
-     *
-     * @param Word
-     * @return std::string
-     */
-    std::string head(const std::string& Word) const;
-
-    /**
-     * @brief 获取单词除了第一个字母外的其余字母
-     *
-     * @param Word
-     * @return std::string
-     */
-    std::string tail(const std::string& Word) const;
-
-    /**
      * @brief 完成字符串的 Soundex 规则编码
      *
      * @param Encoding
@@ -98,15 +66,6 @@ private:
     void encodeLetter(std::string& Encoding, char Letter, char LastLetter) const;
 
     /**
-     * @brief 判断是否是元音字符
-     *
-     * @param Letter
-     * @return true
-     * @return false
-     */
-    bool isVowel(char Letter) const;
-
-    /**
      * @brief 获取一个字符对应的数字
      *
      * @param Letter
@@ -131,12 +90,4 @@ private:
      * @return std::string
      */
     std::string lastDigit(const std::string& Encoding) const;
-
-    /**
-     * @brief 安装 Soundex 的规则要求进行补零
-     *
-     * @param Word
-     * @return std::string
-     */
-    std::string zeroPad(const std::string& Word) const;
 };
