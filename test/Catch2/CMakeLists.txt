@@ -1,1 +1,2 @@
 add_subdirectory(TestSoundex)
+add_subdirectory(ParameterizedTest)
