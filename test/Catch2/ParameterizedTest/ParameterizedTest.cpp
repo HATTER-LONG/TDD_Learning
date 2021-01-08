@@ -4,7 +4,6 @@
 
 using namespace ::Catch;
 
-
 class Adder
 {
 public:
