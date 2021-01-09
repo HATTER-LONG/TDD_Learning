@@ -1,0 +1,41 @@
+#include "AddressExtractor.h"
+
+#include <string>
+
+using namespace std;
+using namespace Json;
+
+Address AddressExtractor::addressFrom(const string& Json) const
+{
+    Address address;
+    Value jsonAddress { jsonAddressFrom(Json) };
+    populate(address, jsonAddress);
+    return address;
+}
+
+Value AddressExtractor::jsonAddressFrom(const string& Json) const
+{
+    auto location = parse(Json);
+    return location.get("address", Value::null);
+}
+
+void AddressExtractor::populate(Address& Address, Value& JsonAddress) const
+{
+    Address.Road = getString(JsonAddress, "road");
+    Address.City = getString(JsonAddress, "city");
+    Address.State = getString(JsonAddress, "state");
+    Address.Country = getString(JsonAddress, "country");
+}
+
+Value AddressExtractor::parse(const string& Json) const
+{
+    Value root;
+    Reader reader;
+    reader.parse(Json, root);
+    return root;
+}
+
+string AddressExtractor::getString(Value& Result, const string& Name) const
+{
+    return Result.get(Name, "").asString();
+}

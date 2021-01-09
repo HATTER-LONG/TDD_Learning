@@ -1,3 +1,5 @@
+#include "AddressExtractor.h"
+#include "Http.h"
 #include "PlaceDescriptionService.h"
 
 #include <string>
@@ -12,5 +14,9 @@ PlaceDescriptionService::PlaceDescriptionService(Http* IHttp)
 
 string PlaceDescriptionService::summaryDescription(const string& Latitude, const string& Longitude) const
 {
-    return "";
+    const auto* getRequestUrl = "";
+    auto jsonResponse = MHttp->get(getRequestUrl);
+    AddressExtractor extractor;
+    auto address = extractor.addressFrom(jsonResponse);
+    return address.Road + ", " + address.City + ", " + address.State + ", " + address.Country;
 }
