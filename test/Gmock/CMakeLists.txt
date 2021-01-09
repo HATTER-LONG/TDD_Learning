@@ -1,2 +1,3 @@
 add_subdirectory(TestSoundex)
 add_subdirectory(ParameterizedTest)
+add_subdirectory(PlaceDescriptionServiceTest)

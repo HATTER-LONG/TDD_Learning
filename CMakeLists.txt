@@ -16,7 +16,7 @@ find_package(Threads)
 find_package(spdlog REQUIRED CONFIG)
 set(LOCAL_LINK_LIB spdlog::spdlog pthread)
 ## 指定头文件、库查找路径
-include_directories(Include)
+include_directories(Include Src)
 link_directories(Lib)
 
 add_subdirectory(test)
