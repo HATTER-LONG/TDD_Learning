@@ -45,4 +45,4 @@ SpacesInAngles:  false                                  # 是否在 <a> 中插�
 SpacesInContainerLiterals: true                         # 在容器列表中是否插入空格
 Standard:        Auto                                   # 标准
 UseTab:          Never                                  # 不使用制表符
-ColumnLimit:     130                                   
+ColumnLimit:     110                                   

@@ -7,4 +7,5 @@ struct Address
     std::string City;
     std::string State;
     std::string Country;
+    std::string summaryDescription() const { return Road + ", " + City + ", " + State + ", " + Country; }
 };
