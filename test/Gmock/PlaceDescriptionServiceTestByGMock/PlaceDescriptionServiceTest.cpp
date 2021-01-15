@@ -1,5 +1,5 @@
 #include "Http.h"
-#include "PlaceDescriptionService/PlaceDescriptionService.h"
+#include "PlaceDescriptionServiceMock/PlaceDescriptionService.h"
 
 #include "gmock/gmock.h"
 #include <gmock/gmock-generated-function-mockers.h>
@@ -33,6 +33,7 @@ TEST_F(APlaceDescriptionService, ReturnsDescriptionForValidLocation)
     auto expectedURL = urlStart + "lat=" + APlaceDescriptionService::ValidLatitude + "&" +
                        "lon=" + APlaceDescriptionService::ValidLongitude;
 
+    EXPECT_CALL(httpStub, initialize());
     EXPECT_CALL(httpStub, get(expectedURL));
     PlaceDescriptionService service { &httpStub };
     service.summaryDescription(ValidLatitude, ValidLongitude);
