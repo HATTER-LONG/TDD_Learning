@@ -33,8 +33,9 @@ TEST_F(APlaceDescriptionService, ReturnsDescriptionForValidLocation)
     auto expectedURL = urlStart + "lat=" + APlaceDescriptionService::ValidLatitude + "&" +
                        "lon=" + APlaceDescriptionService::ValidLongitude;
 
-    EXPECT_CALL(httpStub, initialize());
-    EXPECT_CALL(httpStub, get(expectedURL));
+    Expectation Expectations = EXPECT_CALL(httpStub, initialize());
+    EXPECT_CALL(httpStub, get(expectedURL)).After(Expectations);
+
     PlaceDescriptionService service { &httpStub };
     service.summaryDescription(ValidLatitude, ValidLongitude);
 }
