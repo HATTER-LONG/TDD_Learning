@@ -4,6 +4,7 @@
 #include "gmock/gmock.h"
 #include <gmock/gmock-generated-function-mockers.h>
 #include <gmock/gmock-matchers.h>
+#include <gmock/gmock-spec-builders.h>
 
 using namespace std;
 using namespace testing;
@@ -22,23 +23,17 @@ class HttpStub : public Http
 {
 public:
     MOCK_METHOD(void, initialize, (), (override));
-    MOCK_CONST_METHOD1(get, string(const string&));
+    MOCK_METHOD(string, get, (const string&), (const override));
 };
 
 TEST_F(APlaceDescriptionService, ReturnsDescriptionForValidLocation)
 {
-    /*     HttpStub httpStub;
-         httpStub.ReturnResponse = R"({"address": {
-                                         "road":"Drury Ln",
-                                         "city":"Fountain",
-                                         "state":"CO",
-                                         "country":"US" }})";
+    HttpStub httpStub;
+    string urlStart { "http://open.mapquestapi.com/nominatim/v1/reverse?format=json&" };
+    auto expectedURL = urlStart + "lat=" + APlaceDescriptionService::ValidLatitude + "&" +
+                       "lon=" + APlaceDescriptionService::ValidLongitude;
 
-         string urlStart { "http://open.mapquestapi.com/nominatim/v1/reverse?format=json&" };
-         httpStub.ExpectedURL = urlStart + "lat=" + APlaceDescriptionService::ValidLatitude + "&" +
-                                "lon=" + APlaceDescriptionService::ValidLongitude;
-
-         PlaceDescriptionService service { &httpStub };
-         auto description = service.summaryDescription(ValidLatitude, ValidLongitude);
-         ASSERT_THAT(description, Eq("Drury Ln, Fountain, CO, US"));*/
+    EXPECT_CALL(httpStub, get(expectedURL));
+    PlaceDescriptionService service { &httpStub };
+    service.summaryDescription(ValidLatitude, ValidLongitude);
 }
