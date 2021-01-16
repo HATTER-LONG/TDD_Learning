@@ -28,7 +28,6 @@ string PlaceDescriptionService::summaryDescription(const string& Response) const
 
 string PlaceDescriptionService::get(const string& Url) const
 {
-    MHttp->get(Url);
     MHttp->initialize();
     return MHttp->get(Url);
 }
