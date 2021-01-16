@@ -1,62 +1,77 @@
 #include "Http.h"
+#include "PlaceDescriptionServiceMock/HttpFactory.h"
 #include "PlaceDescriptionServiceMock/PlaceDescriptionService.h"
 
 #include "gmock/gmock.h"
-#include <gmock/gmock-generated-function-mockers.h>
-#include <gmock/gmock-matchers.h>
-#include <gmock/gmock-spec-builders.h>
 #include <memory>
 
 using namespace std;
 using namespace testing;
+
 class HttpStub : public Http
 {
 public:
-    MOCK_METHOD(void, initialize, (), (override));
-    MOCK_METHOD(string, get, (const string&), (const override));
+    MOCK_METHOD0(initialize, void());
+    MOCK_CONST_METHOD1(get, string(const string&));
 };
+
 class APlaceDescriptionService : public Test
 {
 public:
     static const string ValidLatitude;
     static const string ValidLongitude;
+
+    shared_ptr<HttpStub> httpStub;
+    shared_ptr<HttpFactory> factory;
+    shared_ptr<PlaceDescriptionService> service;
+
+    virtual void SetUp() override
+    {
+        factory = make_shared<HttpFactory>();
+        service = make_shared<PlaceDescriptionService>(factory);
+    }
+
+    void TearDown() override
+    {
+        factory.reset();
+        httpStub.reset();
+    }
 };
 
-const string APlaceDescriptionService::ValidLatitude("38.005");
-const string APlaceDescriptionService::ValidLongitude("-104.44");
-
-class PlaceDescriptionServiceStubHttpService : public PlaceDescriptionService
+class APlaceDescriptionServiceWithHttpMock : public APlaceDescriptionService
 {
 public:
-    PlaceDescriptionServiceStubHttpService(shared_ptr<HttpStub> ParmHttpStub)
-            : HttpStub { ParmHttpStub }
+    void SetUp() override
     {
+        APlaceDescriptionService::SetUp();
+        httpStub = make_shared<HttpStub>();
+        factory->setInstance(httpStub);
     }
-    shared_ptr<Http> httpService() const override { return HttpStub; }
-    shared_ptr<Http> HttpStub;
 };
 
-
-
-TEST_F(APlaceDescriptionService, ReturnsDescriptionForValidLocation)
+TEST_F(APlaceDescriptionServiceWithHttpMock, MakesHttpRequestToObtainAddress)
 {
-    shared_ptr<HttpStub> httpStub { new HttpStub };
     string urlStart { "http://open.mapquestapi.com/nominatim/v1/reverse?format=json&" };
     auto expectedURL = urlStart + "lat=" + APlaceDescriptionService::ValidLatitude + "&" +
                        "lon=" + APlaceDescriptionService::ValidLongitude;
-
-    Expectation Expectations = EXPECT_CALL(*httpStub, initialize());
-    //  get(expectedURL) 这一步同时验证了应该传给 get 的参数与 expectedURL 一致
-    EXPECT_CALL(*httpStub, get(expectedURL)).After(Expectations);
-
-    PlaceDescriptionServiceStubHttpService service { httpStub };
-    service.summaryDescription(ValidLatitude, ValidLongitude);
+    EXPECT_CALL(*httpStub, initialize());
+    EXPECT_CALL(*httpStub, get(expectedURL));
+    service->summaryDescription(ValidLatitude, ValidLongitude);
 }
 
-TEST_F(APlaceDescriptionService, FormatsRetrievedAddressIntoSummaryDescription)
+class APlaceDescriptionServiceWithNiceHttpMock : public APlaceDescriptionService
 {
-    shared_ptr<HttpStub> httpStub { new NiceMock<HttpStub> };
+public:
+    void SetUp() override
+    {
+        APlaceDescriptionService::SetUp();
+        httpStub = make_shared<NiceMock<HttpStub>>();
+        factory->setInstance(httpStub);
+    }
+};
 
+TEST_F(APlaceDescriptionServiceWithNiceHttpMock, FormatsRetrievedAddressIntoSummaryDescription)
+{
     EXPECT_CALL(*httpStub, get(_))
         .WillOnce(Return(
             R"({ "address": {
@@ -64,9 +79,12 @@ TEST_F(APlaceDescriptionService, FormatsRetrievedAddressIntoSummaryDescription)
               "city":"Fountain",
               "state":"CO",
               "country":"US" }})"));
-    PlaceDescriptionServiceStubHttpService service(httpStub);
 
-    auto description = service.summaryDescription(ValidLatitude, ValidLongitude);
+    auto description = service->summaryDescription(ValidLatitude, ValidLongitude);
 
+    Mock::VerifyAndClearExpectations(httpStub.get());
     ASSERT_THAT(description, Eq("Drury Ln, Fountain, CO, US"));
 }
+
+const string APlaceDescriptionService::ValidLatitude("38.005");
+const string APlaceDescriptionService::ValidLongitude("-104.44");

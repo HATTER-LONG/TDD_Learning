@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Address.h"
+#include "HttpFactory.h"
 
 #include <memory>
 #include <string>
@@ -10,6 +11,7 @@ class Http;
 class PlaceDescriptionService
 {
 public:
+    PlaceDescriptionService(std::shared_ptr<HttpFactory> Factory);
     virtual ~PlaceDescriptionService() {};
     std::string summaryDescription(const std::string& Latitude, const std::string& Longitude) const;
 
@@ -20,6 +22,6 @@ private:
     std::string get(const std::string& RequestUrl) const;
     std::string summaryDescription(const std::string& Response) const;
 
-protected:
     virtual std::shared_ptr<Http> httpService() const;
+    std::shared_ptr<HttpFactory> httpFactory_;
 };
