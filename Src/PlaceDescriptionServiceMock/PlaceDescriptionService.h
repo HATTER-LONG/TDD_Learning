@@ -2,6 +2,7 @@
 
 #include "Address.h"
 
+#include <memory>
 #include <string>
 
 class Http;
@@ -9,7 +10,7 @@ class Http;
 class PlaceDescriptionService
 {
 public:
-    PlaceDescriptionService(Http* IHttp);
+    virtual ~PlaceDescriptionService() {};
     std::string summaryDescription(const std::string& Latitude, const std::string& Longitude) const;
 
 private:
@@ -19,5 +20,6 @@ private:
     std::string get(const std::string& RequestUrl) const;
     std::string summaryDescription(const std::string& Response) const;
 
-    Http* MHttp;
+protected:
+    virtual std::shared_ptr<Http> httpService() const;
 };
