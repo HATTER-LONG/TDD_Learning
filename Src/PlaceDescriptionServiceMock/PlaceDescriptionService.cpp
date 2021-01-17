@@ -28,7 +28,6 @@ string PlaceDescriptionService::summaryDescription(const string& Response) const
 
 string PlaceDescriptionService::get(const string& Url) const
 {
-    // auto http = httpService();
     auto http = httpFactory_->get();
     http->initialize();
     return http->get(Url);

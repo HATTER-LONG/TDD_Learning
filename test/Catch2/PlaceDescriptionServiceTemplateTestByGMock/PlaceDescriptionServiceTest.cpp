@@ -1,12 +1,14 @@
 #include "Http.h"
 #include "PlaceDescriptionServiceTemplateMock/PlaceDescriptionService.h"
+#include "catch2/catch.hpp"
 
 #include "gmock/gmock.h"
 #include <memory>
 
 using namespace std;
 using namespace testing;
-
+using namespace Catch;
+;
 class HttpStub : public Http
 {
 public:
@@ -14,7 +16,7 @@ public:
     MOCK_METHOD(string, get, (const string&), (const override));
 };
 
-class APlaceDescriptionService : public Test
+class APlaceDescriptionService
 {
 public:
     static const string ValidLatitude;
@@ -27,9 +29,8 @@ public:
     PlaceDescriptionServiceTemplate<HttpStub> service;
 };
 
-TEST_F(APlaceDescriptionServiceWithHttpMock, MakesHttpRequestToObtainAddress)
+TEST_CASE_METHOD(APlaceDescriptionServiceWithHttpMock, "MakesHttpRequestToObtainAddress")
 {
-
     string urlStart { "http://open.mapquestapi.com/nominatim/v1/reverse?format=json&" };
 
     auto expectedURL = urlStart + "lat=" + APlaceDescriptionService::ValidLatitude + "&" +
@@ -46,7 +47,7 @@ public:
     PlaceDescriptionServiceTemplate<NiceMock<HttpStub>> service;
 };
 
-TEST_F(APlaceDescriptionServiceWithNiceHttpMock, FormatsRetrievedAddressIntoSummaryDescription)
+TEST_CASE_METHOD(APlaceDescriptionServiceWithNiceHttpMock, "FormatsRetrievedAddressIntoSummaryDescription")
 {
     EXPECT_CALL(service.http(), get(_))
         .WillOnce(Return(
@@ -58,7 +59,7 @@ TEST_F(APlaceDescriptionServiceWithNiceHttpMock, FormatsRetrievedAddressIntoSumm
 
     auto description = service.summaryDescription(ValidLatitude, ValidLongitude);
 
-    ASSERT_THAT(description, Eq("Drury Ln, Fountain, CO, US"));
+    REQUIRE_THAT(description, Equals("Drury Ln, Fountain, CO, US"));
 }
 
 

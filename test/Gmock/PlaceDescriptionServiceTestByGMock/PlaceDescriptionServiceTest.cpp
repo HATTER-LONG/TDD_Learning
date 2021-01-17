@@ -11,8 +11,8 @@ using namespace testing;
 class HttpStub : public Http
 {
 public:
-    MOCK_METHOD0(initialize, void());
-    MOCK_CONST_METHOD1(get, string(const string&));
+    MOCK_METHOD(void, initialize, (), (override));
+    MOCK_METHOD(string, get, (const string&), (const override));
 };
 
 class APlaceDescriptionService : public Test
