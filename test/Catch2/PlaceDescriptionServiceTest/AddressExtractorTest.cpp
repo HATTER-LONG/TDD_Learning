@@ -9,7 +9,7 @@ using namespace Catch;
 class AnAddressExtractor
 {
 public:
-    AddressExtractor Extractor;
+    AddressExtractor m_extractor;
 };
 
 class IsAddressEmpty : public Catch::MatcherBase<Address>
@@ -18,7 +18,7 @@ public:
     IsAddressEmpty() { }
     bool match(Address const& Arg) const override
     {
-        return Arg.Road.empty() && Arg.City.empty() && Arg.State.empty() && Arg.Country.empty();
+        return Arg.m_road.empty() && Arg.m_city.empty() && Arg.m_state.empty() && Arg.m_country.empty();
     }
 
     virtual std::string describe() const override { return "is empty about  Address Info"; }
@@ -26,7 +26,7 @@ public:
 
 TEST_CASE_METHOD(AnAddressExtractor, "ReturnsAnEmptyAddressOnAFailedParse", "AnAddressExtractor")
 {
-    auto address = Extractor.addressFrom("not valid json");
+    auto address = m_extractor.addressFrom("not valid json");
 
     REQUIRE_THAT(address, IsAddressEmpty());
 }
@@ -35,7 +35,7 @@ TEST_CASE_METHOD(AnAddressExtractor, "ReturnsAnEmptyAddressWhenNoAddressFound", 
 {
     const auto* json = R"({ "place_id":"15331615" })";
 
-    auto address = Extractor.addressFrom(json);
+    auto address = m_extractor.addressFrom(json);
 
     REQUIRE_THAT(address, IsAddressEmpty());
 }
@@ -52,12 +52,12 @@ TEST_CASE_METHOD(AnAddressExtractor, "ReturnsPopulatedAddressForValidJsonResult"
          }
       })";
 
-    auto address = Extractor.addressFrom(json);
+    auto address = m_extractor.addressFrom(json);
 
-    REQUIRE_THAT(address.Road, Equals("War Eagle Court"));
-    REQUIRE_THAT(address.City, Equals("Colorado Springs"));
-    REQUIRE_THAT(address.State, Equals("Colorado"));
-    REQUIRE_THAT(address.Country, Equals("United States of America"));
+    REQUIRE_THAT(address.m_road, Equals("War Eagle Court"));
+    REQUIRE_THAT(address.m_city, Equals("Colorado Springs"));
+    REQUIRE_THAT(address.m_state, Equals("Colorado"));
+    REQUIRE_THAT(address.m_country, Equals("United States of America"));
 }
 
 TEST_CASE_METHOD(AnAddressExtractor, "DefaultsNonexistentFieldsToEmpty", "AnAddressExtractor")
@@ -68,7 +68,7 @@ TEST_CASE_METHOD(AnAddressExtractor, "DefaultsNonexistentFieldsToEmpty", "AnAddr
             "city":"Colorado Springs",
             "country":"United States of America" }})";
 
-    auto address = Extractor.addressFrom(json);
+    auto address = m_extractor.addressFrom(json);
 
-    REQUIRE_THAT(address.State, Equals(""));
+    REQUIRE_THAT(address.m_state, Equals(""));
 }

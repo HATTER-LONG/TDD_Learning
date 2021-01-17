@@ -4,11 +4,11 @@ using namespace ::testing;
 
 struct SumCase
 {
-    int A, B, Expected;
+    int m_a, m_b, m_expected;
     SumCase(int AnA, int AB, int AnExpected)
-            : A(AnA)
-            , B(AB)
-            , Expected(AnExpected)
+            : m_a(AnA)
+            , m_b(AB)
+            , m_expected(AnExpected)
     {
     }
 };
@@ -31,7 +31,7 @@ TEST(AnAdder, GeneratesASumFromTwoNumbers)
 TEST_P(AnAdder, GeneratesLotsOfSumsFromTwoNumbers)
 {
     SumCase input = GetParam();
-    ASSERT_THAT(Adder::sum(input.A, input.B), Eq(input.Expected));
+    ASSERT_THAT(Adder::sum(input.m_a, input.m_b), Eq(input.m_expected));
 }
 SumCase sums[] = { SumCase(1, 1, 2), SumCase(1, 2, 3), SumCase(2, 2, 4) };
 INSTANTIATE_TEST_SUITE_P(BulkTest, AnAdder, ValuesIn(sums));

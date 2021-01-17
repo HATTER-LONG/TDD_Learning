@@ -18,9 +18,9 @@ TEST_CASE("GeneratesASumFromTwoNumbers", "AnAdder")
 TEST_CASE("BulkTest", "AnAdder")
 {
     using std::make_tuple;
-    size_t TestInputA, TestInputB, ExpectOutPut;
+    size_t testInputA, testInputB, expectOutPut;
     // clang-format off
-    std::tie(TestInputA, TestInputB, ExpectOutPut) = 
+    std::tie(testInputA, testInputB, expectOutPut) = 
         GENERATE(table<size_t, size_t, size_t>(
                 { 
                     make_tuple(1, 2, 3), 
@@ -32,6 +32,6 @@ TEST_CASE("BulkTest", "AnAdder")
         );
     //clang-format on
 
-    CAPTURE(TestInputA, TestInputB, ExpectOutPut);//用于记录数据信息 log
-    REQUIRE(Adder::sum(TestInputA, TestInputB) == ExpectOutPut);
+    CAPTURE(testInputA, testInputB, expectOutPut);//用于记录数据信息 log
+    REQUIRE(Adder::sum(testInputA, testInputB) == expectOutPut);
 }

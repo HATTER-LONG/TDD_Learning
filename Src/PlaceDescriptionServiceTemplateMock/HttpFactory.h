@@ -13,5 +13,5 @@ public:
     void reset();
 
 private:
-    std::shared_ptr<Http> Instance;
+    std::shared_ptr<Http> m_instance;
 };

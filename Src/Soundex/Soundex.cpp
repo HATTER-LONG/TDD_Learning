@@ -5,12 +5,13 @@
 std::string Soundex::encode(const std::string& Word) const
 {
     return stringutil::zeroPad(
-        stringutil::upperFront(stringutil::head(Word)) + stringutil::tail(encodedDigits(Word)), MaxCodeLength);
+        stringutil::upperFront(stringutil::head(Word)) + stringutil::tail(encodedDigits(Word)),
+        MAX_CODE_LENGTH);
 }
 
 bool Soundex::isComplete(const std::string& Encoding) const
 {
-    return Encoding.length() == MaxCodeLength;
+    return Encoding.length() == MAX_CODE_LENGTH;
 }
 
 std::string Soundex::encodedDigits(const std::string& Word) const
@@ -37,7 +38,10 @@ void Soundex::encodeTail(std::string& Encoding, const std::string& Word) const
 void Soundex::encodeLetter(std::string& Encoding, char Letter, char LastLetter) const
 {
     auto digit = encodedDigit(Letter);
-    if (digit != NotADigit && (isDuplicateLetter(Encoding, digit) || charutil::isVowel(LastLetter))) { Encoding += digit; }
+    if (digit != NOT_A_DIGIT && (isDuplicateLetter(Encoding, digit) || charutil::isVowel(LastLetter)))
+    {
+        Encoding += digit;
+    }
 }
 
 std::string Soundex::encodedDigit(char Letter) const
@@ -54,7 +58,7 @@ std::string Soundex::encodedDigit(char Letter) const
     // clang-format on
 
     auto it = encodings.find(charutil::lower(Letter));
-    return it == encodings.end() ? NotADigit : it->second;
+    return it == encodings.end() ? NOT_A_DIGIT : it->second;
 }
 
 bool Soundex::isDuplicateLetter(std::string& Encoding, std::string& Letter) const
@@ -64,6 +68,6 @@ bool Soundex::isDuplicateLetter(std::string& Encoding, std::string& Letter) cons
 
 std::string Soundex::lastDigit(const std::string& Encoding) const
 {
-    if (Encoding.empty()) return NotADigit;
+    if (Encoding.empty()) return NOT_A_DIGIT;
     return std::string(1, Encoding.back());   // string 初始化一个字符的方法
 }

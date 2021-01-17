@@ -17,14 +17,14 @@ public:
 class APlaceDescriptionService : public Test
 {
 public:
-    static const string ValidLatitude;
-    static const string ValidLongitude;
+    static const string VALID_LATITUDE;
+    static const string VALID_LONGITUDE;
 };
 
 class APlaceDescriptionServiceWithHttpMock : public APlaceDescriptionService
 {
 public:
-    PlaceDescriptionServiceTemplate<HttpStub> service;
+    PlaceDescriptionServiceTemplate<HttpStub> m_service;
 };
 
 TEST_F(APlaceDescriptionServiceWithHttpMock, MakesHttpRequestToObtainAddress)
@@ -32,23 +32,23 @@ TEST_F(APlaceDescriptionServiceWithHttpMock, MakesHttpRequestToObtainAddress)
 
     string urlStart { "http://open.mapquestapi.com/nominatim/v1/reverse?format=json&" };
 
-    auto expectedURL = urlStart + "lat=" + APlaceDescriptionService::ValidLatitude + "&" +
-                       "lon=" + APlaceDescriptionService::ValidLongitude;
-    EXPECT_CALL(service.http(), initialize());
-    EXPECT_CALL(service.http(), get(expectedURL));
+    auto expectedURL = urlStart + "lat=" + APlaceDescriptionService::VALID_LATITUDE + "&" +
+                       "lon=" + APlaceDescriptionService::VALID_LONGITUDE;
+    EXPECT_CALL(m_service.http(), initialize());
+    EXPECT_CALL(m_service.http(), get(expectedURL));
 
-    service.summaryDescription(ValidLatitude, ValidLongitude);
+    m_service.summaryDescription(VALID_LATITUDE, VALID_LONGITUDE);
 }
 
 class APlaceDescriptionServiceWithNiceHttpMock : public APlaceDescriptionService
 {
 public:
-    PlaceDescriptionServiceTemplate<NiceMock<HttpStub>> service;
+    PlaceDescriptionServiceTemplate<NiceMock<HttpStub>> m_service;
 };
 
 TEST_F(APlaceDescriptionServiceWithNiceHttpMock, FormatsRetrievedAddressIntoSummaryDescription)
 {
-    EXPECT_CALL(service.http(), get(_))
+    EXPECT_CALL(m_service.http(), get(_))
         .WillOnce(Return(
             R"({ "address": {
               "road":"Drury Ln",
@@ -56,11 +56,11 @@ TEST_F(APlaceDescriptionServiceWithNiceHttpMock, FormatsRetrievedAddressIntoSumm
               "state":"CO",
               "country":"US" }})"));
 
-    auto description = service.summaryDescription(ValidLatitude, ValidLongitude);
+    auto description = m_service.summaryDescription(VALID_LATITUDE, VALID_LONGITUDE);
 
     ASSERT_THAT(description, Eq("Drury Ln, Fountain, CO, US"));
 }
 
 
-const string APlaceDescriptionService::ValidLatitude("38.005");
-const string APlaceDescriptionService::ValidLongitude("-104.44");
+const string APlaceDescriptionService::VALID_LATITUDE("38.005");
+const string APlaceDescriptionService::VALID_LONGITUDE("-104.44");

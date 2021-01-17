@@ -5,8 +5,8 @@
 #include <string>
 #include <unordered_map>
 
-static const size_t MaxCodeLength { 4 };
-const std::string NotADigit("*");
+static const size_t MAX_CODE_LENGTH { 4 };
+const std::string NOT_A_DIGIT("*");
 
 /**
  * @brief Soundex 算法类

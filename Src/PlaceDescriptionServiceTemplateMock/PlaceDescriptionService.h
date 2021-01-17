@@ -20,7 +20,7 @@ public:
     }
 
     // mocks in tests need the reference
-    HTTP& http() { return http_; }
+    HTTP& http() { return m_http; }
 
 private:
     // ...
@@ -33,8 +33,8 @@ private:
 
     std::string get(const std::string& Url)
     {
-        http_.initialize();
-        return http_.get(Url);
+        m_http.initialize();
+        return m_http.get(Url);
     }
     // ...
 
@@ -48,7 +48,7 @@ private:
 
     std::string keyValue(const std::string& Key, const std::string& Value) const { return Key + "=" + Value; }
 
-    HTTP http_;
+    HTTP m_http;
 };
 
 class HTTP;

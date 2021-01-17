@@ -18,5 +18,5 @@ private:
     std::string keyValue(const std::string& Key, const std::string& Value) const;
     std::string get(const std::string& RequestUrl) const;
     std::string summaryDescription(const std::string& Response) const;
-    const Http* MHttp;
+    const Http* m_http;
 };

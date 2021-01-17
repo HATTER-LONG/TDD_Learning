@@ -10,41 +10,41 @@ using namespace Catch;
 class APlaceDescriptionService
 {
 public:
-    static const string ValidLatitude;
-    static const string ValidLongitude;
+    static const string VALID_LATITUDE;
+    static const string VALID_LONGITUDE;
 };
 
-const string APlaceDescriptionService::ValidLatitude("38.005");
-const string APlaceDescriptionService::ValidLongitude("-104.44");
+const string APlaceDescriptionService::VALID_LATITUDE("38.005");
+const string APlaceDescriptionService::VALID_LONGITUDE("-104.44");
 
 class HttpStub : public Http
 {
 public:
-    string ReturnResponse;
-    string ExpectedURL;
+    string m_returnResponse;
+    string m_expectedUrl;
     void initialize() override { }
     std::string get(const std::string& Url) const override
     {
         verify(Url);
-        return ReturnResponse;
+        return m_returnResponse;
     }
 
-    void verify(const string& Url) const { REQUIRE_THAT(Url, Equals(ExpectedURL)); }
+    void verify(const string& Url) const { REQUIRE_THAT(Url, Equals(m_expectedUrl)); }
 };
 
 TEST_CASE_METHOD(APlaceDescriptionService, "ReturnsDescriptionForValidLocation", "APlaceDescriptionService")
 {
     HttpStub httpStub;
-    httpStub.ReturnResponse = R"({"address": {
+    httpStub.m_returnResponse = R"({"address": {
                                     "road":"Drury Ln",
                                     "city":"Fountain",
                                     "state":"CO",
                                     "country":"US" }})";
 
     string urlStart { "http://open.mapquestapi.com/nominatim/v1/reverse?format=json&" };
-    httpStub.ExpectedURL = urlStart + "lat=" + ValidLatitude + "&" + "lon=" + ValidLongitude;
+    httpStub.m_expectedUrl = urlStart + "lat=" + VALID_LATITUDE + "&" + "lon=" + VALID_LONGITUDE;
 
     PlaceDescriptionService service { &httpStub };
-    auto description = service.summaryDescription(ValidLatitude, ValidLongitude);
+    auto description = service.summaryDescription(VALID_LATITUDE, VALID_LONGITUDE);
     REQUIRE_THAT(description, Equals("Drury Ln, Fountain, CO, US"));
 }

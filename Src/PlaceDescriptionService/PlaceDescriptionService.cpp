@@ -8,7 +8,7 @@ using namespace std;
 
 
 PlaceDescriptionService::PlaceDescriptionService(Http* IHttp)
-        : MHttp(IHttp)
+        : m_http(IHttp)
 {
 }
 
@@ -28,7 +28,7 @@ string PlaceDescriptionService::summaryDescription(const string& Response) const
 
 string PlaceDescriptionService::get(const string& RequestUrl) const
 {
-    return MHttp->get(RequestUrl);
+    return m_http->get(RequestUrl);
 }
 string PlaceDescriptionService::createGetRequestUrl(const string& Latitude, const string& Longitude) const
 {

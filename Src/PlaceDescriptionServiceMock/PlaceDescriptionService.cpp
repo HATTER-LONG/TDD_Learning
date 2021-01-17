@@ -8,7 +8,7 @@
 
 using namespace std;
 PlaceDescriptionService::PlaceDescriptionService(shared_ptr<HttpFactory> HttpFactory)
-        : httpFactory_ { HttpFactory }
+        : m_httpFactory { HttpFactory }
 {
 }
 
@@ -28,7 +28,7 @@ string PlaceDescriptionService::summaryDescription(const string& Response) const
 
 string PlaceDescriptionService::get(const string& Url) const
 {
-    auto http = httpFactory_->get();
+    auto http = m_httpFactory->get();
     http->initialize();
     return http->get(Url);
 }

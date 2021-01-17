@@ -12,15 +12,15 @@ HttpFactory::HttpFactory()
 
 shared_ptr<Http> HttpFactory::get()
 {
-    return Instance;
+    return m_instance;
 }
 
 void HttpFactory::reset()
 {
-    Instance = make_shared<CurlHttp>();
+    m_instance = make_shared<CurlHttp>();
 }
 
 void HttpFactory::setInstance(shared_ptr<Http> NewInstance)
 {
-    Instance = NewInstance;
+    m_instance = NewInstance;
 }

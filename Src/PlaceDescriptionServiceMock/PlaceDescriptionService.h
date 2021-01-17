@@ -23,5 +23,5 @@ private:
     std::string summaryDescription(const std::string& Response) const;
 
     virtual std::shared_ptr<Http> httpService() const;
-    std::shared_ptr<HttpFactory> httpFactory_;
+    std::shared_ptr<HttpFactory> m_httpFactory;
 };

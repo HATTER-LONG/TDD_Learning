@@ -17,7 +17,7 @@ public:
     static size_t writeCallback(const char* Buf, size_t Size, size_t NMemb, void*);
 
 private:
-    CURL* Curl;
+    CURL* m_curl;
 
-    static std::string response_;
+    static std::string sResponse;
 };

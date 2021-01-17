@@ -18,23 +18,23 @@ public:
 class APlaceDescriptionService : public Test
 {
 public:
-    static const string ValidLatitude;
-    static const string ValidLongitude;
+    static const string VALID_LATITUDE;
+    static const string VALID_LONGITUDE;
 
-    shared_ptr<HttpStub> httpStub;
-    shared_ptr<HttpFactory> factory;
-    shared_ptr<PlaceDescriptionService> service;
+    shared_ptr<HttpStub> m_httpStub;
+    shared_ptr<HttpFactory> m_factory;
+    shared_ptr<PlaceDescriptionService> m_service;
 
     virtual void SetUp() override
     {
-        factory = make_shared<HttpFactory>();
-        service = make_shared<PlaceDescriptionService>(factory);
+        m_factory = make_shared<HttpFactory>();
+        m_service = make_shared<PlaceDescriptionService>(m_factory);
     }
 
     void TearDown() override
     {
-        factory.reset();
-        httpStub.reset();
+        m_factory.reset();
+        m_httpStub.reset();
     }
 };
 
@@ -44,19 +44,19 @@ public:
     void SetUp() override
     {
         APlaceDescriptionService::SetUp();
-        httpStub = make_shared<HttpStub>();
-        factory->setInstance(httpStub);
+        m_httpStub = make_shared<HttpStub>();
+        m_factory->setInstance(m_httpStub);
     }
 };
 
 TEST_F(APlaceDescriptionServiceWithHttpMock, MakesHttpRequestToObtainAddress)
 {
     string urlStart { "http://open.mapquestapi.com/nominatim/v1/reverse?format=json&" };
-    auto expectedURL = urlStart + "lat=" + APlaceDescriptionService::ValidLatitude + "&" +
-                       "lon=" + APlaceDescriptionService::ValidLongitude;
-    EXPECT_CALL(*httpStub, initialize());
-    EXPECT_CALL(*httpStub, get(expectedURL));
-    service->summaryDescription(ValidLatitude, ValidLongitude);
+    auto expectedURL = urlStart + "lat=" + APlaceDescriptionService::VALID_LATITUDE + "&" +
+                       "lon=" + APlaceDescriptionService::VALID_LONGITUDE;
+    EXPECT_CALL(*m_httpStub, initialize());
+    EXPECT_CALL(*m_httpStub, get(expectedURL));
+    m_service->summaryDescription(VALID_LATITUDE, VALID_LONGITUDE);
 }
 
 class APlaceDescriptionServiceWithNiceHttpMock : public APlaceDescriptionService
@@ -65,14 +65,14 @@ public:
     void SetUp() override
     {
         APlaceDescriptionService::SetUp();
-        httpStub = make_shared<NiceMock<HttpStub>>();
-        factory->setInstance(httpStub);
+        m_httpStub = make_shared<NiceMock<HttpStub>>();
+        m_factory->setInstance(m_httpStub);
     }
 };
 
 TEST_F(APlaceDescriptionServiceWithNiceHttpMock, FormatsRetrievedAddressIntoSummaryDescription)
 {
-    EXPECT_CALL(*httpStub, get(_))
+    EXPECT_CALL(*m_httpStub, get(_))
         .WillOnce(Return(
             R"({ "address": {
               "road":"Drury Ln",
@@ -80,11 +80,11 @@ TEST_F(APlaceDescriptionServiceWithNiceHttpMock, FormatsRetrievedAddressIntoSumm
               "state":"CO",
               "country":"US" }})"));
 
-    auto description = service->summaryDescription(ValidLatitude, ValidLongitude);
+    auto description = m_service->summaryDescription(VALID_LATITUDE, VALID_LONGITUDE);
 
-    Mock::VerifyAndClearExpectations(httpStub.get());
+    Mock::VerifyAndClearExpectations(m_httpStub.get());
     ASSERT_THAT(description, Eq("Drury Ln, Fountain, CO, US"));
 }
 
-const string APlaceDescriptionService::ValidLatitude("38.005");
-const string APlaceDescriptionService::ValidLongitude("-104.44");
+const string APlaceDescriptionService::VALID_LATITUDE("38.005");
+const string APlaceDescriptionService::VALID_LONGITUDE("-104.44");

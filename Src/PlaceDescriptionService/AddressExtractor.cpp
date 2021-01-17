@@ -21,10 +21,10 @@ Value AddressExtractor::jsonAddressFrom(const string& Json) const
 
 void AddressExtractor::populate(Address& Address, Value& JsonAddress) const
 {
-    Address.Road = getString(JsonAddress, "road");
-    Address.City = getString(JsonAddress, "city");
-    Address.State = getString(JsonAddress, "state");
-    Address.Country = getString(JsonAddress, "country");
+    Address.m_road = getString(JsonAddress, "road");
+    Address.m_city = getString(JsonAddress, "city");
+    Address.m_state = getString(JsonAddress, "state");
+    Address.m_country = getString(JsonAddress, "country");
 }
 
 Value AddressExtractor::parse(const string& Json) const
