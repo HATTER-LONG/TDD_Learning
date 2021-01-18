@@ -12,10 +12,12 @@ class APortfolio
 {
 public:
     static const string IBM;
+    static const string SAMSUNG;
     Portfolio m_portfolio;
 };
 
 const string APortfolio::IBM("IBM");
+const string APortfolio::SAMSUNG("SSNLF");
 
 TEST_CASE_METHOD(APortfolio, "Is empty whe created", "[Portfolio]")
 {
@@ -42,4 +44,31 @@ TEST_CASE_METHOD(APortfolio, "Answers share count for purchased symbol", "[Portf
 TEST_CASE_METHOD(APortfolio, "Throw on purchase of zero shares", "[Portfolio]")
 {
     REQUIRE_THROWS_AS(m_portfolio.purchase(IBM, 0), InvalidPurchaseException);
+}
+
+TEST_CASE_METHOD(APortfolio, "Answers share count for appropriate symbol", "[Portfolio]")
+{
+    m_portfolio.purchase(IBM, 5);
+    m_portfolio.purchase(SAMSUNG, 15);
+    REQUIRE(m_portfolio.shareCount(IBM) == 5u);
+}
+
+TEST_CASE_METHOD(APortfolio, "share count reflects accumulated for purchases same symbol", "[Portfolio]")
+{
+    m_portfolio.purchase(IBM, 5);
+    m_portfolio.purchase(IBM, 15);
+    REQUIRE(m_portfolio.shareCount(IBM) == (5u + 15));
+}
+
+TEST_CASE_METHOD(APortfolio, "Reduces share count of symbol on sell", "[Portfolio]")
+{
+    m_portfolio.purchase(SAMSUNG, 30);
+    m_portfolio.sell(SAMSUNG, 13);
+
+    REQUIRE(m_portfolio.shareCount(SAMSUNG) == (30u - 13));
+}
+
+TEST_CASE_METHOD(APortfolio, "Throw when selling more shares than purchased", "[Portfolio]")
+{
+    REQUIRE_THROWS_AS(m_portfolio.sell(SAMSUNG, 1), InvalidSellException);
 }
