@@ -72,3 +72,14 @@ TEST_CASE_METHOD(APortfolio, "Throw when selling more shares than purchased", "[
 {
     REQUIRE_THROWS_AS(m_portfolio.sell(SAMSUNG, 1), InvalidSellException);
 }
+
+TEST_CASE_METHOD(APortfolio, "Answers the purchase record for a single purchase")
+{
+    using boost::gregorian::date;
+    m_portfolio.purchase(SAMSUNG, 5);
+    auto purchases = m_portfolio.purchases(SAMSUNG);
+
+    auto purchase = purchases[0];
+    REQUIRE(purchase.m_shareCount == 5u);
+    REQUIRE(purchase.m_date == Portfolio::FIXED_PURCHASE_DATE);
+}
