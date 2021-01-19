@@ -8,16 +8,21 @@ bool Portfolio::isEmpty() const
 }
 void Portfolio::purchase(const string& Symbol, unsigned int ShareCount, const date& TransactionDate)
 {
-    if (0 == ShareCount) throw InvalidPurchaseException();
-    m_holdings[Symbol] = ShareCount + shareCount(Symbol);
-    m_purchases.push_back(PurchaseRecord(ShareCount, TransactionDate));
+    transact(Symbol, ShareCount, TransactionDate);
 }
-void Portfolio::sell(const std::string& Symbol, unsigned int ShareCount)
+void Portfolio::sell(const std::string& Symbol, unsigned int ShareCount, const date& TransactionDate)
 {
-    if (ShareCount > shareCount(Symbol)) throw InvalidSellException();
-    m_holdings[Symbol] = shareCount(Symbol) - ShareCount;
+    if (ShareCount > shareCount(Symbol)) throw InsufficientSharesException();
+    transact(Symbol, -ShareCount, TransactionDate);
 }
 
+void Portfolio::transact(
+    const std::string& Symbol, int ShareChange, const boost::gregorian::date& TransactionDate)
+{
+    if (0 == ShareChange) throw ShareCountCannotBeZeroException();
+    m_holdings[Symbol] = shareCount(Symbol) + ShareChange;
+    m_purchases.push_back(PurchaseRecord(ShareChange, TransactionDate));
+}
 unsigned int Portfolio::shareCount(const string& Symbol) const
 {
     auto it = m_holdings.find(Symbol);
