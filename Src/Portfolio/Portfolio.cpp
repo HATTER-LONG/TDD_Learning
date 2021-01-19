@@ -2,16 +2,15 @@
 using namespace std;
 using namespace boost::gregorian;
 
-const date Portfolio::FIXED_PURCHASE_DATE(date(2021, Jan, 18));
 bool Portfolio::isEmpty() const
 {
     return 0 == m_holdings.size();
 }
-void Portfolio::purchase(const string& Symbol, unsigned int ShareCount)
+void Portfolio::purchase(const string& Symbol, unsigned int ShareCount, const date& TransactionDate)
 {
     if (0 == ShareCount) throw InvalidPurchaseException();
     m_holdings[Symbol] = ShareCount + shareCount(Symbol);
-    m_purchases.push_back(PurchaseRecord(ShareCount, FIXED_PURCHASE_DATE));
+    m_purchases.push_back(PurchaseRecord(ShareCount, TransactionDate));
 }
 void Portfolio::sell(const std::string& Symbol, unsigned int ShareCount)
 {
