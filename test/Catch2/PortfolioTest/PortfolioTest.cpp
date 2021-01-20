@@ -88,7 +88,7 @@ TEST_CASE_METHOD(APortfolio, "Throw when selling more shares than purchased", "[
     REQUIRE_THROWS_AS(sell(SAMSUNG, 1), InsufficientSharesException);
 }
 
-TEST_CASE_METHOD(APortfolio, "Answers the purchase record for a single purchase")
+TEST_CASE_METHOD(APortfolio, "Answers the purchase record for a single purchase", "[Portfolio]")
 {
     purchase(SAMSUNG, 5, ARBITRARY_DATE);
 
@@ -107,7 +107,62 @@ TEST_CASE_METHOD(APortfolio, "Includes sales in purchase records", "[Portfolio]"
     REQUIRE(sales[1].m_date == ARBITRARY_DATE);
 }
 
-TEST_CASE_METHOD(APortfolio, "Throws on sell of zero shares")
+TEST_CASE_METHOD(APortfolio, "Throws on sell of zero shares", "[Portfolio]")
 {
     REQUIRE_THROWS_AS(sell(IBM, 0), ShareCountCannotBeZeroException);
+}
+
+bool operator==(const PurchaseRecord& Lhs, const PurchaseRecord& Rhs)
+{
+    return Lhs.m_shareCount == Rhs.m_shareCount && Lhs.m_date == Rhs.m_date;
+}
+
+// TODO: 使用新式方法实现一个 Matcher 匹配器
+// https://github.com/catchorg/Catch2/blob/devel/docs/matchers.md
+class ElementsAre : public Catch::MatcherBase<vector<PurchaseRecord>>
+{
+public:
+    ElementsAre(const vector<PurchaseRecord>& Param)
+            : m_purchaseRecord(Param)
+    {
+    }
+    bool match(vector<PurchaseRecord> const& Arg) const override
+    {
+        for (auto varL : Arg)
+        {
+            if (!checkMemberInVec(varL)) return false;
+        }
+        return true;
+    }
+    bool checkMemberInVec(const PurchaseRecord& Member) const
+    {
+        bool retFlag = false;
+        for (auto varR : m_purchaseRecord)
+            if (Member == varR) { retFlag = true; }
+        return retFlag;
+    }
+    virtual std::string describe() const override { return "None Match"; }
+
+
+private:
+    vector<PurchaseRecord> m_purchaseRecord;
+};
+
+TEST_CASE_METHOD(APortfolio, "Separates purchase records by symbol", "[Portfolio]")
+{
+    purchase(SAMSUNG, 5, ARBITRARY_DATE);
+    purchase(IBM, 1, ARBITRARY_DATE);
+
+    auto sales = m_portfolio.purchases(SAMSUNG);
+    vector<PurchaseRecord> checkArray { PurchaseRecord(5, ARBITRARY_DATE) };
+    REQUIRE_THAT(sales, ElementsAre(checkArray));
+}
+
+bool operator!=(const PurchaseRecord& Lhs, const PurchaseRecord& Rhs)
+{
+    return !(Lhs == Rhs);
+}
+TEST_CASE_METHOD(APortfolio, "Answers empty purchase record vector when symbol not found", "[Portfolio]")
+{
+    REQUIRE_THAT(m_portfolio.purchases(SAMSUNG), Equals(vector<PurchaseRecord>()));
 }

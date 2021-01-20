@@ -19,7 +19,11 @@ struct PurchaseRecord
             , m_date(Date)
     {
     }
-
+    PurchaseRecord(PurchaseRecord const& Param)
+            : m_shareCount(Param.m_shareCount)
+            , m_date(Param.m_date)
+    {
+    }
     int m_shareCount;
     boost::gregorian::date m_date;
 };
@@ -38,6 +42,21 @@ public:
 
 private:
     void transact(const std::string& Symbol, int ShareChange, const boost::gregorian::date& TransactionDate);
+    void updateShareCount(const std::string& Symbol, int ShareChange);
+    void addPurchaseRecord(const std::string& Symbol, int ShareCount, const boost::gregorian::date& Date);
+    void throwIfShareCountIsZero(int ShareChange) const;
+
+    bool containsSymbol(const std::string& Symbol);
+    void initializePurchaseRecords(const std::string& Symbol);
+    void add(const std::string& Symbol, PurchaseRecord&& Record);
+
+    template <typename T>
+    T mapFind(std::unordered_map<std::string, T> Map, const std::string& Key) const
+    {
+        auto it = Map.find(Key);
+        return it == Map.end() ? T {} : it->second;
+    }
+
     std::unordered_map<std::string, unsigned int> m_holdings;
-    std::vector<PurchaseRecord> m_purchases;
+    std::unordered_map<std::string, std::vector<PurchaseRecord>> m_purchaseRecords;
 };
