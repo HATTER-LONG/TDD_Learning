@@ -1,4 +1,7 @@
 #include "Portfolio.h"
+#include "Portfolio/Holding.h"
+
+#include <vector>
 using namespace std;
 using namespace boost::gregorian;
 
@@ -21,7 +24,6 @@ void Portfolio::transact(
     const std::string& Symbol, int ShareChange, const boost::gregorian::date& TransactionDate)
 {
     throwIfShareCountIsZero(ShareChange);
-    updateShareCount(Symbol, ShareChange);
     addPurchaseRecord(Symbol, ShareChange, TransactionDate);
 }
 
@@ -29,11 +31,6 @@ void Portfolio::throwIfShareCountIsZero(int ShareChange) const
 {
     if (0 == ShareChange)
         throw ShareCountCannotBeZeroException();
-}
-
-void Portfolio::updateShareCount(const string& Symbol, int ShareChange)
-{
-    m_holdings[Symbol] = shareCount(Symbol) + ShareChange;
 }
 
 void Portfolio::addPurchaseRecord(const std::string& Symbol, int ShareChange, const date& Date)
@@ -47,24 +44,24 @@ void Portfolio::addPurchaseRecord(const std::string& Symbol, int ShareChange, co
 
 void Portfolio::initializePurchaseRecords(const string& Symbol)
 {
-    m_purchaseRecords[Symbol] = vector<PurchaseRecord>();
+    m_holdings[Symbol] = Holding();
 }
 void Portfolio::add(const string& Symbol, PurchaseRecord&& Record)
 {
-    m_purchaseRecords[Symbol].push_back(Record);
+    m_holdings[Symbol].add(Record);
 }
 
 bool Portfolio::containsSymbol(const string& Symbol)
 {
-    return m_purchaseRecords.find(Symbol) != m_purchaseRecords.end();
+    return m_holdings.find(Symbol) != m_holdings.end();
 }
 
 unsigned int Portfolio::shareCount(const string& Symbol) const
 {
-    return mapFind<unsigned int>(m_holdings, Symbol);
+    return mapFind<Holding>(m_holdings, Symbol).shareCount();
 }
 
 vector<PurchaseRecord> Portfolio::purchases(const std::string& Symbol) const
 {
-    return mapFind<vector<PurchaseRecord>>(m_purchaseRecords, Symbol);
+    return mapFind<Holding>(m_holdings, Symbol).purchases();
 }

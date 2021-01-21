@@ -1,6 +1,7 @@
 #pragma once
+#include "Holding.h"
+#include "PurchaseRecord.h"
 
-#include <boost/date_time/gregorian/gregorian_types.hpp>
 #include <exception>
 #include <string>
 #include <unordered_map>
@@ -12,21 +13,7 @@ class InsufficientSharesException : public std::exception
 {
 };
 
-struct PurchaseRecord
-{
-    PurchaseRecord(int ShareCount, const boost::gregorian::date& Date)
-            : m_shareCount(ShareCount)
-            , m_date(Date)
-    {
-    }
-    PurchaseRecord(PurchaseRecord const& Param)
-            : m_shareCount(Param.m_shareCount)
-            , m_date(Param.m_date)
-    {
-    }
-    int m_shareCount;
-    boost::gregorian::date m_date;
-};
+
 class Portfolio
 {
 public:
@@ -42,7 +29,6 @@ public:
 
 private:
     void transact(const std::string& Symbol, int ShareChange, const boost::gregorian::date& TransactionDate);
-    void updateShareCount(const std::string& Symbol, int ShareChange);
     void addPurchaseRecord(const std::string& Symbol, int ShareCount, const boost::gregorian::date& Date);
     void throwIfShareCountIsZero(int ShareChange) const;
 
@@ -57,6 +43,5 @@ private:
         return it == Map.end() ? T {} : it->second;
     }
 
-    std::unordered_map<std::string, unsigned int> m_holdings;
-    std::unordered_map<std::string, std::vector<PurchaseRecord>> m_purchaseRecords;
+    std::unordered_map<std::string, Holding> m_holdings;
 };
