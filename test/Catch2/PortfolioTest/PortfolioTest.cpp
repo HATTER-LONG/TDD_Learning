@@ -117,45 +117,15 @@ bool operator==(const PurchaseRecord& Lhs, const PurchaseRecord& Rhs)
     return Lhs.m_shareCount == Rhs.m_shareCount && Lhs.m_date == Rhs.m_date;
 }
 
-// TODO: 使用新式方法实现一个 Matcher 匹配器
-// https://github.com/catchorg/Catch2/blob/devel/docs/matchers.md
-class ElementsAre : public Catch::MatcherBase<vector<PurchaseRecord>>
-{
-public:
-    ElementsAre(const vector<PurchaseRecord>& Param)
-            : m_purchaseRecord(Param)
-    {
-    }
-    bool match(vector<PurchaseRecord> const& Arg) const override
-    {
-        for (auto varL : Arg)
-        {
-            if (!checkMemberInVec(varL)) return false;
-        }
-        return true;
-    }
-    bool checkMemberInVec(const PurchaseRecord& Member) const
-    {
-        bool retFlag = false;
-        for (auto varR : m_purchaseRecord)
-            if (Member == varR) { retFlag = true; }
-        return retFlag;
-    }
-    virtual std::string describe() const override { return "None Match"; }
-
-
-private:
-    vector<PurchaseRecord> m_purchaseRecord;
-};
-
 TEST_CASE_METHOD(APortfolio, "Separates purchase records by symbol", "[Portfolio]")
 {
     purchase(SAMSUNG, 5, ARBITRARY_DATE);
     purchase(IBM, 1, ARBITRARY_DATE);
 
     auto sales = m_portfolio.purchases(SAMSUNG);
-    vector<PurchaseRecord> checkArray { PurchaseRecord(5, ARBITRARY_DATE) };
-    REQUIRE_THAT(sales, ElementsAre(checkArray));
+    // vector 匹配器
+    // https://github.com/catchorg/Catch2/blob/v2.x/docs/matchers.md#Vector-matchers
+    REQUIRE_THAT(sales, VectorContains(PurchaseRecord(5, ARBITRARY_DATE)));
 }
 
 bool operator!=(const PurchaseRecord& Lhs, const PurchaseRecord& Rhs)
