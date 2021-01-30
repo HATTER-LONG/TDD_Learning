@@ -8,7 +8,6 @@ const double Pi { 4.0 * atan(1.0) };
 const double ToRadiansConversionFactor { Pi / 180 };
 const double RadiusOfEarthInMeters { 6372000 };
 const double MetersPerDegreeAtEquator { 111111 };
-
 const double North { 0 };
 const double West { 90 };
 const double South { 180 };
@@ -34,7 +33,6 @@ public:
 
     bool operator==(const Location& that);
     bool operator!=(const Location& that);
-
     Location go(double meters, double bearing) const;
     double distanceInMeters(const Location& there) const;
     bool isUnknown() const;
