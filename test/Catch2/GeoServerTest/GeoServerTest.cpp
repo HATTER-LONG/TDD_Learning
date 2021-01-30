@@ -1,6 +1,8 @@
 #include "GeoServer/GeoServer.h"
+#include "GeoServer/Location.h"
 #include "GeoServer/User.h"
 #include "GeoServer/VectorUtil.h"
+#include "TestTimer.h"
 
 #include <catch2/catch.hpp>
 using namespace std;
@@ -113,4 +115,21 @@ TEST_CASE_METHOD(FixtureUserInBox, "Answers only users within specified range", 
     auto users = server.usersInBox(aUser, Width, Height);
 
     REQUIRE_THAT(vector<string> { cUser }, Equals(UserNames(users)));
+}
+
+TEST_CASE_METHOD(FixtureUserInBox, "Handles large numbers of users",
+    "[.][Slow][AGeoServer_UsersInBox_Slow][AGeoServer_UsersInBox]")
+{
+    Location anotherLocation { aUserLocation.go(10, West) };
+    const unsigned int lots { 500000 };
+    for (unsigned int i { 0 }; i < lots; i++)
+    {
+        string user { "user" + to_string(i) };
+        server.track(user);
+        server.updateLocation(user, anotherLocation);
+    }
+    ToolBox::TestTimer testtimer;
+    auto users = server.usersInBox(aUser, Width, Height);
+
+    REQUIRE(lots == users.size());
 }
