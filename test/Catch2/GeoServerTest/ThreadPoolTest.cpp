@@ -66,40 +66,70 @@ TEST_CASE_METHOD(Fixture, "HasWorkAfterWorkRemovedButWorkRemains", "[AThreadPool
     REQUIRE(pool2.hasWork());
 }
 
-TEST_CASE_METHOD(Fixture, "Pulls work in a thread", "[AThreadPool]")
+class Fixture_Thread
 {
-    ThreadPool pool2;
-    pool2.start();
-    condition_variable wasExecuted;
-    bool wasWorked { false };
-    Work work { [&] {
-        unique_lock<mutex> lock(m);
-        wasWorked = true;
-        wasExecuted.notify_all();
-    } };
-    pool2.add(work);
-
-    unique_lock<mutex> lock(m);
-    REQUIRE(wasExecuted.wait_for(lock, chrono::milliseconds(100), [&] { return wasWorked; }));
-}
-
-TEST_CASE_METHOD(Fixture, "Executest all work", "[AThreadPool]")
-{
-    ThreadPool pool2;
-    pool2.start();
-    unsigned int count { 0 };
-    unsigned int NumberOfWorkItems { 3 };
-
-    condition_variable wasExecuted;
-    Work work { [&] {
+public:
+    ~Fixture_Thread()
+    {
+        for (auto& t : threads)
+            t->join();
+    }
+    void incrementCountAndNotify()
+    {
         std::unique_lock<std::mutex> lock(m);
         ++count;
         wasExecuted.notify_all();
-    } };
+    }
+
+    void waitForCountAndFailOnTimeout(
+        unsigned int expectedCount, const milliseconds& time = milliseconds(100))
+    {
+        unique_lock<mutex> lock(m);
+        REQUIRE(wasExecuted.wait_for(lock, time, [&] { return expectedCount == count; }));
+    }
+
+    mutex m;
+    condition_variable wasExecuted;
+    unsigned int count { 0 };
+
+    vector<shared_ptr<thread>> threads;
+};
+
+TEST_CASE_METHOD(Fixture_Thread, "Pulls work in a thread", "[AThreadPool_AddRequest]")
+{
+    ThreadPool pool2;
+    pool2.start();
+    Work work { [&] { incrementCountAndNotify(); } };
+    unsigned int NumberOfWorkItems { 1 };
+    pool2.add(work);
+
+    waitForCountAndFailOnTimeout(NumberOfWorkItems);
+}
+
+TEST_CASE_METHOD(Fixture_Thread, "Executest all work", "[AThreadPool_AddRequest]")
+{
+    ThreadPool pool2;
+    pool2.start();
+    Work work { [&] { incrementCountAndNotify(); } };
+    unsigned int NumberOfWorkItems { 3 };
 
     for (unsigned int i { 0 }; i < NumberOfWorkItems; i++)
         pool2.add(work);
-    unique_lock<mutex> lock(m);
-    REQUIRE(
-        wasExecuted.wait_for(lock, chrono::milliseconds(100), [&] { return count == NumberOfWorkItems; }));
+    waitForCountAndFailOnTimeout(NumberOfWorkItems);
+}
+TEST_CASE_METHOD(Fixture_Thread, "HoldsUpUnderClientStress", "[AThreadPool_AddRequest]")
+{
+    ThreadPool pool2;
+    pool2.start();
+
+    Work work { [&] { incrementCountAndNotify(); } };
+    unsigned int NumberOfWorkItems { 100 };
+    unsigned int NumberOfThreads { 100 };
+
+    for (unsigned int i { 0 }; i < NumberOfThreads; i++)
+        threads.push_back(make_shared<thread>([&] {
+            for (unsigned int j { 0 }; j < NumberOfWorkItems; j++)
+                pool2.add(work);
+        }));
+    waitForCountAndFailOnTimeout(NumberOfThreads * NumberOfWorkItems);
 }

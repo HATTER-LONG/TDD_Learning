@@ -5,6 +5,7 @@
 #include <atomic>
 #include <deque>
 #include <memory>
+#include <mutex>
 #include <string>
 #include <thread>
 class ThreadPool
@@ -19,12 +20,21 @@ public:
             workThread_->join();
     }
     void start() { workThread_ = std::make_shared<std::thread>(&ThreadPool::worker, this); }
-    bool hasWork() { return !workQueue_.empty(); }
+    bool hasWork()
+    {
+        std::lock_guard<std::mutex> block(mutex_);
+        return !workQueue_.empty();
+    }
 
-    void add(Work work) { workQueue_.push_front(work); }
+    void add(Work work)
+    {
+        std::lock_guard<std::mutex> block(mutex_);
+        workQueue_.push_front(work);
+    }
 
     Work pullWork()
     {
+        std::lock_guard<std::mutex> block(mutex_);
         auto work = workQueue_.back();
         workQueue_.pop_back();
         return work;
@@ -48,4 +58,5 @@ private:
     std::atomic<bool> done_ { false };
     std::deque<Work> workQueue_;
     std::shared_ptr<std::thread> workThread_;
+    std::mutex mutex_;
 };
