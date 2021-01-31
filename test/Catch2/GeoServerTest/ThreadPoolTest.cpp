@@ -152,7 +152,6 @@ public:
 TEST_CASE_METHOD(Fixture_MultipleThread, "DispatchesWorkToMultipleThreads", "[AThreadPoolWithMultipleThread]")
 {
     ThreadPool pool2;
-    pool2.start();
     unsigned int numberOfThreads { 2 };
     pool2.start(numberOfThreads);
     Work work { [&] {
