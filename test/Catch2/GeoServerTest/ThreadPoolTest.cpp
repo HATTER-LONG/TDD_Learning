@@ -82,3 +82,24 @@ TEST_CASE_METHOD(Fixture, "Pulls work in a thread", "[AThreadPool]")
     unique_lock<mutex> lock(m);
     REQUIRE(wasExecuted.wait_for(lock, chrono::milliseconds(100), [&] { return wasWorked; }));
 }
+
+TEST_CASE_METHOD(Fixture, "Executest all work", "[AThreadPool]")
+{
+    ThreadPool pool2;
+    pool2.start();
+    unsigned int count { 0 };
+    unsigned int NumberOfWorkItems { 3 };
+
+    condition_variable wasExecuted;
+    Work work { [&] {
+        std::unique_lock<std::mutex> lock(m);
+        ++count;
+        wasExecuted.notify_all();
+    } };
+
+    for (unsigned int i { 0 }; i < NumberOfWorkItems; i++)
+        pool2.add(work);
+    unique_lock<mutex> lock(m);
+    REQUIRE(
+        wasExecuted.wait_for(lock, chrono::milliseconds(100), [&] { return count == NumberOfWorkItems; }));
+}
