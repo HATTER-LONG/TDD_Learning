@@ -7,7 +7,7 @@
 #include <mutex>
 using namespace std;
 using namespace Catch;
-
+using std::chrono::milliseconds;
 class Fixture
 {
 public:
@@ -17,7 +17,8 @@ public:
 
 TEST_CASE_METHOD(Fixture, "HasNoWorkOnCreation", "[AThreadPool]")
 {
-    REQUIRE_FALSE(pool.hasWork());
+    ThreadPool pool2;
+    REQUIRE_FALSE(pool2.hasWork());
 }
 
 // TODO 使用 Fixture 时，给 ThreadPool 中的  deque push 元素会出现段错误，初步规避使用局部创建
@@ -68,6 +69,7 @@ TEST_CASE_METHOD(Fixture, "HasWorkAfterWorkRemovedButWorkRemains", "[AThreadPool
 TEST_CASE_METHOD(Fixture, "Pulls work in a thread", "[AThreadPool]")
 {
     ThreadPool pool2;
+    pool2.start();
     condition_variable wasExecuted;
     bool wasWorked { false };
     Work work { [&] {
