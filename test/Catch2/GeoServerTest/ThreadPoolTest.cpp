@@ -5,6 +5,7 @@
 #include <chrono>
 #include <condition_variable>
 #include <mutex>
+#include <set>
 using namespace std;
 using namespace Catch;
 using std::chrono::milliseconds;
@@ -132,4 +133,37 @@ TEST_CASE_METHOD(Fixture_Thread, "HoldsUpUnderClientStress", "[AThreadPool_AddRe
                 pool2.add(work);
         }));
     waitForCountAndFailOnTimeout(NumberOfThreads * NumberOfWorkItems);
+}
+
+class Fixture_MultipleThread : public Fixture_Thread
+{
+public:
+    set<thread::id> threads;
+
+    void addThreadIfUnique(const thread::id& id)
+    {
+        std::unique_lock<std::mutex> lock(m);
+        threads.insert(id);
+    }
+
+    size_t numberOfThreadsProcessed() { return threads.size(); }
+};
+
+TEST_CASE_METHOD(Fixture_MultipleThread, "DispatchesWorkToMultipleThreads", "[AThreadPoolWithMultipleThread]")
+{
+    ThreadPool pool2;
+    pool2.start();
+    unsigned int numberOfThreads { 2 };
+    pool2.start(numberOfThreads);
+    Work work { [&] {
+        addThreadIfUnique(this_thread::get_id());
+        incrementCountAndNotify();
+    } };
+    unsigned int NumberOfWorkItems { 500 };
+
+    for (unsigned int i { 0 }; i < NumberOfWorkItems; i++)
+        pool2.add(work);
+
+    waitForCountAndFailOnTimeout(NumberOfWorkItems);
+    REQUIRE(numberOfThreads == numberOfThreadsProcessed());
 }
