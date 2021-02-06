@@ -28,21 +28,6 @@ jobs:
         # A list of files, directories, and wildcard patterns to cache and restore
         path: |
               ${{ github.workspace }}/Env/usr/
-            #  /usr/local/include/spdlog
-            #  /usr/local/lib/libspdlog.a
-            #  /usr/local/lib/pkgconfig/spdlog.pc
-            #  /usr/local/lib/cmake/spdlog
-            #  /usr/local/include/catch2
-            #  /usr/local/lib/libCatch2WithMain.a
-            #  /usr/local/lib/cmake/Catch2
-            #  /usr/local/lib/libgmock*
-            #  /usr/local/lib/libgtest*
-            #  /usr/local/include/gtest
-            #  /usr/local/include/gmock
-            #  /usr/local/lib/cmake/GTest
-            #  /usr/local/lib/cmake/jsoncpp
-            #  /usr/local/lib/libjsoncpp*
-            #  /usr/local/include/json
         # An explicit key for restoring and saving the cache
         key: ${{ runner.os }}-${{ steps.get-date.outputs.date }}-H
     - name: TDD_Learning
