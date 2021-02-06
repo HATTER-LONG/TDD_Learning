@@ -7,7 +7,7 @@ using namespace ::Catch;
 class Adder
 {
 public:
-    static int sum(int A, int B) { return A + B; }
+    static size_t sum(int A, int B) { return A + B; }
 };
 
 TEST_CASE("GeneratesASumFromTwoNumbers", "AnAdder")
