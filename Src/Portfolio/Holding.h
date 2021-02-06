@@ -2,6 +2,7 @@
 #include "PurchaseRecord.h"
 
 #include <numeric>
+#include <vector>
 class Holding
 {
 public:
