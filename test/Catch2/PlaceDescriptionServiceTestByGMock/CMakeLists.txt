@@ -14,6 +14,6 @@ add_executable(cathc2_PlaceDescriptionServiceByGmock ${SRCFILELIST})
 target_link_libraries(cathc2_PlaceDescriptionServiceByGmock
     Catch2::Catch2WithMain
     GTest::gmock
-    jsoncpp_lib_static
+    jsoncpp_static
     ${LOCAL_LINK_LIB} 
     )

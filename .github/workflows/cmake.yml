@@ -40,7 +40,7 @@ jobs:
               /usr/local/include/gmock
               /usr/local/lib/cmake/GTest
               /usr/local/lib/cmake/jsoncpp
-              /usr/local/lib/libjsoncpp_static.a
+              /usr/local/lib/libjsoncpp*
               /usr/local/include/json
         # An explicit key for restoring and saving the cache
         key: ${{ runner.os }}-${{ steps.get-date.outputs.date }}-H

@@ -12,6 +12,6 @@ add_executable(gmock_PlaceDescriptionServiceByGmock ${SRCFILELIST})
 target_link_libraries(gmock_PlaceDescriptionServiceByGmock
     GTest::gmock
     GTest::gmock_main
-    jsoncpp_lib_static
+    jsoncpp_static
     ${LOCAL_LINK_LIB} 
     )

@@ -30,8 +30,10 @@ void AddressExtractor::populate(Address& Address, Value& JsonAddress) const
 Value AddressExtractor::parse(const string& Json) const
 {
     Value root;
-    Reader reader;
-    reader.parse(Json, root);
+    CharReaderBuilder b;
+    CharReader* reader(b.newCharReader());
+    JSONCPP_STRING errs;
+    reader->parse(Json.c_str(), Json.c_str() + Json.length(), &root, &errs);
     return root;
 }
 

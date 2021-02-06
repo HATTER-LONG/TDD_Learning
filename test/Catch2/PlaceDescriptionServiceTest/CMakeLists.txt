@@ -9,6 +9,6 @@ add_executable(catch2_PlaceDescriptionService ${SRCFILELIST})
 
 target_link_libraries(catch2_PlaceDescriptionService
     Catch2::Catch2WithMain
-    jsoncpp_lib_static
+    jsoncpp_static
     ${LOCAL_LINK_LIB} 
     )
