@@ -2,6 +2,8 @@ cmake_minimum_required(VERSION 3.5)
 
 project(TDD-Learning-Project LANGUAGES CXX)
 
+message(STATUS  "CMAKE_PREFIX_PATH = ${CMAKE_PREFIX_PATH}")
+
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
