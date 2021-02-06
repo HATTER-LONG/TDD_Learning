@@ -42,17 +42,28 @@ jobs:
               /usr/local/lib/cmake/jsoncpp
               /usr/local/lib/libjsoncpp*
               /usr/local/include/json
+              ${{ github.workspace }}/Env/Boost
         # An explicit key for restoring and saving the cache
         key: ${{ runner.os }}-${{ steps.get-date.outputs.date }}-H
-    - name: Download and install Boost
+    - name: install_boost
       # You may pin to the exact commit or the version.
       # uses: MarkusJx/install-boost@072e2dd3b37f8652cda1b00bcaca9bcfe06b7278
       uses: MarkusJx/install-boost@v1.0.1
+      id: install-boost
       with:
         # The boost version to install, e.g. "1.73.0"
         boost_version: 1.73.0
         platform_version: 18.04
-        
+        boost_install_dir: ${{ github.workspace }}/Env/Boost
+
+    - name: List contents of boost directory
+      run: ls
+      working-directory: ${{ steps.install-boost.outputs.BOOST_ROOT }}
+      shell: bash
+    - run: echo "${{ steps.install-boost.outputs.BOOST_ROOT }}"
+      shell: bash
+    - run: echo "${{ steps.install-boost.outputs.BOOST_VER }}"
+      shell: bash
     - name: TDD_Learning
       uses: actions/checkout@v2
       with:
@@ -142,7 +153,8 @@ jobs:
       # and build directories, but this is only available with CMake 3.13 and higher.  
       # The CMake binaries on the Github Actions machines are (as of this writing) 3.12
       run: cmake ../ -DCMAKE_BUILD_TYPE=$BUILD_TYPE
-
+      env:
+          BOOST_ROOT: ${{ steps.install-boost.outputs.BOOST_ROOT }}
     - name: Build
       working-directory: ${{github.workspace}}/SourceCode/build
       shell: bash
