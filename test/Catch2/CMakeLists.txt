@@ -5,5 +5,4 @@ add_subdirectory(PlaceDescriptionServiceTestByGMock)
 add_subdirectory(PlaceDescriptionServiceTemplateTestByGMock)
 
 add_subdirectory(PortfolioTest)
-add_subdirectory(SnippetPublisher)
 add_subdirectory(GeoServerTest)

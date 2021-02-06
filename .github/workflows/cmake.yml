@@ -41,11 +41,26 @@ jobs:
               /usr/local/lib/cmake/GTest
         # An explicit key for restoring and saving the cache
         key: ${{ runner.os }}-${{ steps.get-date.outputs.date }}-L
-    - name: AlgorithmTraining
+    - name: TDD_Learning
       uses: actions/checkout@v2
       with:
         fetch-depth: 1
         path: SourceCode
+    - name: CK_Jsonhpp
+      if: steps.EnvCache.outputs.cache-hit != 'true'
+      uses: actions/checkout@v2
+      with:
+        fetch-depth: 1
+        repository: open-source-parsers/jsoncpp
+        path: Env/jsoncpp
+        ref: 1.9,4
+    - name: Install_Jsonhpp
+      if: steps.EnvCache.outputs.cache-hit != 'true'
+      run:  |
+            mkdir ${{ github.workspace }}/Env/jsoncpp/MBuild
+            cd ${{ github.workspace }}/Env/jsoncpp/MBuild
+            cmake ..
+            sudo make install -j32
     - name: CK_GTest
       if: steps.EnvCache.outputs.cache-hit != 'true'
       uses: actions/checkout@v2
