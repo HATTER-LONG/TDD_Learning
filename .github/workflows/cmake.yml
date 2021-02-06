@@ -8,11 +8,11 @@ env:
 
 jobs:
   build:
-    runs-on: macos-latest
+    runs-on: ubuntu-18.04
     strategy:
           matrix:
             cxx:
-              - clang++
+              - g++
             build_type: [Release]
             std: [17]
     steps:
@@ -50,7 +50,9 @@ jobs:
       uses: MarkusJx/install-boost@v1.0.1
       with:
         # The boost version to install, e.g. "1.73.0"
-        boost_version: 1.71.0
+        boost_version: 1.73.0
+        platform_version: 18.04
+        
     - name: TDD_Learning
       uses: actions/checkout@v2
       with:
