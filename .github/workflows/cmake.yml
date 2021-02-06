@@ -1,0 +1,130 @@
+name: CMake
+
+on: [push]
+
+env:
+  # Customize the CMake build type here (Release, Debug, RelWithDebInfo, etc.)
+  BUILD_TYPE: Release
+
+jobs:
+  build:
+    runs-on: macos-latest
+    strategy:
+          matrix:
+            cxx:
+              - clang++
+            build_type: [Release]
+            std: [17]
+    steps:
+    - name: Get Date
+      id: get-date
+      run: |
+        echo "::set-output name=date::$(/bin/date -u "+%Y%m")"
+      shell: bash
+    - name: Cache
+      uses: actions/cache@v2.1.4
+      id: EnvCache
+      with:
+        # A list of files, directories, and wildcard patterns to cache and restore
+        path: |
+              /usr/local/include/spdlog
+              /usr/local/lib/libspdlog.a
+              /usr/local/lib/pkgconfig/spdlog.pc
+              /usr/local/lib/cmake/spdlog
+              /usr/local/include/catch2
+              /usr/local/lib/libCatch2WithMain.a
+              /usr/local/lib/cmake/Catch2
+              /usr/local/lib/libgmock*
+              /usr/local/lib/libgtest*
+              /usr/local/include/gtest
+              /usr/local/include/gmock
+              /usr/local/lib/cmake/GTest
+        # An explicit key for restoring and saving the cache
+        key: ${{ runner.os }}-${{ steps.get-date.outputs.date }}-L
+    - name: AlgorithmTraining
+      uses: actions/checkout@v2
+      with:
+        fetch-depth: 1
+        path: SourceCode
+    - name: CK_GTest
+      if: steps.EnvCache.outputs.cache-hit != 'true'
+      uses: actions/checkout@v2
+      with:
+        fetch-depth: 1
+        repository: google/googletest
+        path: Env/googletest
+        ref: v1.10.x
+    - name: Install_GTest
+      if: steps.EnvCache.outputs.cache-hit != 'true'
+      run:  |
+            mkdir ${{ github.workspace }}/Env/googletest/MBuild
+            cd ${{ github.workspace }}/Env/googletest/MBuild
+            cmake ..
+            sudo make install -j32
+    - name: CK_spdlog
+      if: steps.EnvCache.outputs.cache-hit != 'true'
+      uses: actions/checkout@v2
+      with:
+        fetch-depth: 1
+        repository: gabime/spdlog
+        path: Env/spdlog
+        ref: v1.8.2
+    - name: Install_spdlog
+      if: steps.EnvCache.outputs.cache-hit != 'true'
+      run:  |
+            mkdir ${{ github.workspace }}/Env/spdlog/MBuild
+            cd ${{ github.workspace }}/Env/spdlog/MBuild
+            cmake ..
+            sudo make install -j32
+    - name: CK_Catch2
+      if: steps.EnvCache.outputs.cache-hit != 'true'
+      uses: actions/checkout@v2
+      with:
+        fetch-depth: 1
+        repository: catchorg/Catch2
+        path: Env/Catch2
+        ref: v2.13.4
+    - name: Install_Catch2
+      if: steps.EnvCache.outputs.cache-hit != 'true'
+      run:  |
+            mkdir ${{ github.workspace }}/Env/Catch2/MBuild
+            cd ${{ github.workspace }}/Env/Catch2/MBuild
+            cmake ..
+            sudo make install -j32
+      shell: bash
+    #- name: Install_CacheEnv
+    #  if: steps.EnvCache.outputs.cache-hit == 'true'
+    #  run:  |
+    #        cd ${{ github.workspace }}/Env/spdlog/MBuild
+    #        cmake ../
+    #        sudo make install -j32
+    #        cd ${{ github.workspace }}/Env/Catch2/MBuild
+    #        cmake ../
+    #        sudo make install -j32
+    - name: Create Build Environment
+      # Some projects don't allow in-source building, so create a separate build directory
+      # We'll use this as our working directory for all subsequent commands
+      run: cmake -E make_directory ${{github.workspace}}/SourceCode/build
+
+    - name: Configure CMake
+      # Use a bash shell so we can use the same syntax for environment variable
+      # access regardless of the host operating system
+      shell: bash
+      working-directory: ${{github.workspace}}/SourceCode/build
+      # Note the current convention is to use the -S and -B options here to specify source 
+      # and build directories, but this is only available with CMake 3.13 and higher.  
+      # The CMake binaries on the Github Actions machines are (as of this writing) 3.12
+      run: cmake ../ -DCMAKE_BUILD_TYPE=$BUILD_TYPE
+
+    - name: Build
+      working-directory: ${{github.workspace}}/SourceCode/build
+      shell: bash
+      # Execute the build.  You can specify a specific target with "--target <NAME>"
+      run: cmake --build . --config $BUILD_TYPE
+
+    - name: Test
+      working-directory: ${{github.workspace}}/SourceCode
+      shell: bash
+      # Execute tests defined by the CMake configuration.  
+      # See https://cmake.org/cmake/help/latest/manual/ctest.1.html for more detail
+      run: ${{github.workspace}}/SourceCode/Run.sh
