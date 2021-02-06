@@ -54,7 +54,7 @@ jobs:
         # The boost version to install, e.g. "1.73.0"
         boost_version: 1.73.0
         platform_version: 18.04
-        boost_install_dir: ${{ github.workspace }}/Env/Boost
+        boost_install_dir: ${{ github.workspace }}/Env
 
     - name: List contents of boost directory
       run: ls
