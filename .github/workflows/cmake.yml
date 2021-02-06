@@ -49,21 +49,6 @@ jobs:
       with:
         fetch-depth: 1
         path: SourceCode
-    - name: CK_curl
-      if: steps.EnvCache.outputs.cache-hit != 'true'
-      uses: actions/checkout@v2
-      with:
-        fetch-depth: 1
-        repository: curl/curl
-        path: Env/curl
-        ref: curl-7_75_0
-    - name: Install_curl
-      if: steps.EnvCache.outputs.cache-hit != 'true'
-      run:  |
-            mkdir ${{ github.workspace }}/Env/curl/MBuild
-            cd ${{ github.workspace }}/Env/curl/MBuild
-            cmake ..
-            sudo make install -j32
     - name: CK_Jsonhpp
       if: steps.EnvCache.outputs.cache-hit != 'true'
       uses: actions/checkout@v2

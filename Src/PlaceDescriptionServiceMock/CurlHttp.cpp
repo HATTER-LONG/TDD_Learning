@@ -6,29 +6,26 @@ using namespace std;
 
 string CurlHttp::sResponse;
 
-CurlHttp::CurlHttp()
-        : m_curl(NULL)
-{
-}
+CurlHttp::CurlHttp() { }
 
 CurlHttp::~CurlHttp()
 {
-    curl_global_cleanup();
+    // curl_global_cleanup();
 }
 
 void CurlHttp::initialize()
 {
-    curl_global_init(CURL_GLOBAL_ALL);
-    m_curl = curl_easy_init();
-    curl_easy_setopt(m_curl, CURLOPT_WRITEFUNCTION, &CurlHttp::writeCallback);
+    // curl_global_init(CURL_GLOBAL_ALL);
+    // m_curl = curl_easy_init();
+    // curl_easy_setopt(m_curl, CURLOPT_WRITEFUNCTION, &CurlHttp::writeCallback);
 }
 
 string CurlHttp::get(const string& Url) const
 {
     sResponse = "invalid request";   // TODO test
-    curl_easy_setopt(m_curl, CURLOPT_URL, Url.c_str());
-    curl_easy_perform(m_curl);
-    curl_easy_cleanup(m_curl);
+    // curl_easy_setopt(m_curl, CURLOPT_URL, Url.c_str());
+    // curl_easy_perform(m_curl);
+    // curl_easy_cleanup(m_curl);
 
     return CurlHttp::response();
 }

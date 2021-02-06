@@ -1,6 +1,5 @@
 find_package(Catch2 REQUIRED CONFIG)
 find_package(jsoncpp REQUIRED CONFIG)
-find_package(CURL REQUIRED CONFIG)
 find_package(GTest REQUIRED CONFIG)
 
 FILE(GLOB SRCFILELIST
@@ -16,6 +15,5 @@ target_link_libraries(cathc2_PlaceDescriptionServiceByGmock
     Catch2::Catch2WithMain
     GTest::gmock
     jsoncpp_lib_static
-    CURL::libcurl
     ${LOCAL_LINK_LIB} 
     )
