@@ -39,13 +39,31 @@ jobs:
               /usr/local/include/gtest
               /usr/local/include/gmock
               /usr/local/lib/cmake/GTest
+              /usr/local/lib/cmake/jsoncpp
+              /usr/local/lib/libjsoncpp_static.a
+              /usr/local/include/json
         # An explicit key for restoring and saving the cache
-        key: ${{ runner.os }}-${{ steps.get-date.outputs.date }}-L
+        key: ${{ runner.os }}-${{ steps.get-date.outputs.date }}-H
     - name: TDD_Learning
       uses: actions/checkout@v2
       with:
         fetch-depth: 1
         path: SourceCode
+    - name: CK_curl
+      if: steps.EnvCache.outputs.cache-hit != 'true'
+      uses: actions/checkout@v2
+      with:
+        fetch-depth: 1
+        repository: curl/curl
+        path: Env/curl
+        ref: curl-7_75_0
+    - name: Install_curl
+      if: steps.EnvCache.outputs.cache-hit != 'true'
+      run:  |
+            mkdir ${{ github.workspace }}/Env/curl/MBuild
+            cd ${{ github.workspace }}/Env/curl/MBuild
+            cmake ..
+            sudo make install -j32
     - name: CK_Jsonhpp
       if: steps.EnvCache.outputs.cache-hit != 'true'
       uses: actions/checkout@v2
