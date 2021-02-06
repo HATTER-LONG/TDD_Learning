@@ -19,7 +19,7 @@
 [stars-url]: https://github.com/HATTER-LONG/TDD_Learning/stargazers
 [issues-shield]: https://img.shields.io/github/issues/HATTER-LONG/TDD_Learning.svg?style=flat
 [issues-url]: https://github.com/HATTER-LONG/TDD_Learning/issues
-[license-shield]: https://img.shields.io/github/license/HATTER-LONG/TDD_Learning?style=flat
+[license-shield]: https://img.shields.io/github/license/HATTER-LONG/TDD_Learning.svg?style=flat
 [license-url]: https://github.com/HATTER-LONG/TDD_Learning/blob/master/LICENSE
 [linkedin-shield]: https://img.shields.io/badge/-LinkedIn-black.svg?style=flat&logo=linkedin&colorB=555
 [linkedin-url]: https://linkedin.com/in/othneildrew
