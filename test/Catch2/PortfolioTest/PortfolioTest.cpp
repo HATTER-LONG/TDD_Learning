@@ -103,7 +103,7 @@ TEST_CASE_METHOD(APortfolio, "Includes sales in purchase records", "[Portfolio]"
     m_portfolio.sell(SAMSUNG, 5, ARBITRARY_DATE);
 
     auto sales = m_portfolio.purchases(SAMSUNG);
-    REQUIRE(sales[1].m_shareCount == -5u);
+    REQUIRE(sales[1].m_shareCount == -5);
     REQUIRE(sales[1].m_date == ARBITRARY_DATE);
 }
 
