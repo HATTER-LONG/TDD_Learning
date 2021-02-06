@@ -2,7 +2,6 @@
 
 #include "Http.h"
 
-#include <curl/curl.h>
 #include <string>
 
 class CurlHttp : public Http
