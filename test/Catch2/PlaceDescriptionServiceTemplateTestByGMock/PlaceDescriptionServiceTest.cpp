@@ -8,7 +8,7 @@
 using namespace std;
 using namespace testing;
 using namespace Catch;
-;
+
 class HttpStub : public Http
 {
 public:
